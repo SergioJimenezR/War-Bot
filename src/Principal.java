@@ -28,42 +28,56 @@ public class Principal implements Ajustes {
 			if (nPersonas < vpersonas.length)
 				vpersonas[nPersonas++] = new Persona(participantes[i]);
 
-		String tweet = "La guerra esta a punto de empezar!\nNumero de participantes: " + participantes.length + ".\n";
-		if (publicarListaDeParticipantes)
-			tweet += "Participantes: " + listadoVivos() + "\n";
-		tweet += "#HueleASangre";
-		tweetear(tweet);
-
-		while (participantes.length - nMuertos > 1) {
-			for (int i = 0; i < repeticionesDiarias && participantes.length-nMuertos > 1; i++) {
-				tweet = obtenerFecha() + matar(vpersonas[encontrarVivo()], vpersonas[encontrarVivo()]);
-				if (participantes.length - nMuertos != 1) { // Normalidad
-					tweet += participantes.length - nMuertos + " personas vivas.\n";
-					if (publicarListaDeParticipantes)
-						tweet += "Vivos: " + listadoVivos() + "\n";
-				} else // Ultima persona / tweet
-					tweet += "Ganador: " + listadoVivos() + "\n";
-				tweet += "#HueleASangre";
-
-				tweetear(tweet);
-
-				pausar(PAUSA_DIURNA);
-			}
-			pausar(PAUSA_NOCTURNA);
-		}
-
+		Comienzo(); // (v1.1)
+		
+		RecorridoPrincipal(); // (v1.1)
+		
 		if (SuicidiosActivados)
-			if (nSuicidios == 0)
-				tweetear("No se ha producido ningun suicidio.");
-			else if (nSuicidios == 1)
-				tweetear("Se ha producido 1 suicidio.");
-			else
-				tweetear("Se han producido " + nSuicidios + " suicidios.");
+			Suicidios(); // (v1.1)
 
 		tweetear("Programa desarrollado en su totalidad por Sergio Jimenez.");
 
 	}
 
+	private static void Comienzo() {
+		String tweet = "La guerra esta a punto de empezar!\nNumero de participantes: " + participantes.length + ".\n";
+		if (publicarListaDeParticipantes)
+			tweet += "Participantes: " + listadoVivos() + "\n";
+		tweet += "#HueleASangre";
+		tweetear(tweet);
+	}
+
+	private static void RecorridoPrincipal() {
+		for (int i = 0; i < repeticionesDiarias && participantes.length - nMuertos > 1; i++) {
+			String tweet = obtenerFecha() + matar(vpersonas[encontrarVivo()], vpersonas[encontrarVivo()]);
+			if (participantes.length - nMuertos != 1) { // Normalidad
+				tweet += participantes.length - nMuertos + " personas vivas.\n";
+				if (publicarListaDeParticipantes)
+					tweet += "Vivos: " + listadoVivos() + "\n";
+			} else // Ultima persona / tweet
+				tweet += "Ganador: " + listadoVivos() + "\n";
+			tweet += "#HueleASangre";
+
+			tweetear(tweet);
+
+			pausar(PAUSA_DIURNA);
+		}
+		pausar(PAUSA_NOCTURNA);
+		
+		if (participantes.length - nMuertos > 1) {
+			RecorridoPrincipal(); // Recursividad añadida (v1.1)
+		}
+	}
+
+	private static void Suicidios() {
+		if (nSuicidios == 0)
+			tweetear("No se ha producido ningun suicidio.");
+		else if (nSuicidios == 1)
+			tweetear("Se ha producido 1 suicidio.");
+		else
+			tweetear("Se han producido " + nSuicidios + " suicidios.");
+	}
+	
 	/*
 	 * vectorVivos() guarda las posiciones vivas del vector "vpersonas" en las
 	 * posiciones de un vector "vectorVivos". Devuelve dicho vector.
